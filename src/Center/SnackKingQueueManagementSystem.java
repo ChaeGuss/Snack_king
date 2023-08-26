@@ -3,6 +3,7 @@ package Center;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Scanner;
 
 import static java.lang.System.in;
@@ -23,7 +24,7 @@ public class SnackKingQueueManagementSystem {
 
     private static final Customer[] storeCustomers = new Customer[10];
 
-    private static final FoodQueue[] newArrays = new FoodQueue[3];
+    private static final FoodQueue[] foodQueues = {new FoodQueue(2), new FoodQueue(3), new FoodQueue(5)};
 
     private static int countCustomers = 0;
 
@@ -32,64 +33,49 @@ public class SnackKingQueueManagementSystem {
 
 
     public static void main(String[] args) {
-        newArrays[0] = new FoodQueue(2);
-        newArrays[1] = new FoodQueue(3);
-        newArrays[2] = new FoodQueue(5);
-
         Scanner scanner = new Scanner(in);
-
         boolean exit = false;
         while (!exit) {
-            mainMenu();
+            printMainMenu();
             String option = scanner.nextLine();
-
-            if (option.equals("100") || option.equals("VFQ")) {
-                viewAllQueues();
-            } else if (option.equals("101") || option.equals("VEQ")) {
-                viewAllEmptyQueues();
-            } else if (option.equals("102") || option.equals("ACQ")) {
-                addCustomer();
-            } else if (option.equals("103") || option.equals("RCQ")) {
-                removeCustomer();
-            } else if (option.equals("104") || option.equals("PCQ")) {
-                removeServedCustomer();
-            } else if (option.equals("105") || option.equals("VCS")) {
-                viewCustomersSortedAlphabetically();
-            } else if (option.equals("106") || option.equals("SPD")) {
-                storeProgramDataToFile();
-            } else if (option.equals("107") || option.equals("LPD")) {
-                loadProgramDataFromFile();
-            } else if (option.equals("108") || option.equals("STK")) {
-                viewRemainingPizzaStock();
-            } else if (option.equals("109") || option.equals("AFS")) {
-                addPizzaToStock();
-            } else if (option.equals("110") || option.equals("IFQ")) {
-                viewIncomeOfEachQueue();
-            } else if (option.equals("999") || option.equals("EXT")) {
-                System.out.println("Exiting Snack King Food Center");
-                exit = true;
-            } else {
-                FoodQueue.printInvalid();
+            switch (option) {
+                case "100", "VFQ" -> viewAllQueues();
+                case "101", "VEQ" -> viewAllEmptyQueues();
+                case "102", "ACQ" -> addCustomer();
+                case "103", "RCQ" -> removeCustomer();
+                case "104", "PCQ" -> removeServedCustomer();
+                case "105", "VCS" -> viewCustomersSortedAlphabetically();
+                case "106", "SPD" -> storeProgramDataToFile();
+                case "107", "LPD" -> loadProgramDataFromFile();
+                case "108", "STK" -> viewRemainingPizzaStock();
+                case "109", "AFS" -> addPizzaToStock();
+                case "110", "IFQ" -> viewIncomeOfEachQueue();
+                case "999", "EXT" -> {
+                    System.out.println("Exiting Snack King Food Center");
+                    exit = true;
+                }
+                default -> FoodQueue.printInvalid();
             }
         }
 
     }
 
-    private static void mainMenu() {
-        System.out.println("100 or VFQ: View all Queues.");
-        System.out.println("101 or VEQ: View all Empty Queues.");
-        System.out.println("102 or ACQ: Add customer to a Queue.");
-        System.out.println("103 or RCQ: Remove a customer from a Queue.");
-        System.out.println("104 or PCQ: Remove a served customer.");
-        System.out.println("105 or VCS: View Customers Sorted in alphabetical order.");
-        System.out.println("106 or SPD: Store Program Data into file.");
-        System.out.println("107 or LPD: Load Program Data from file.");
-        System.out.println("108 or STK: View Remaining Pizza Stock.");
-        System.out.println("109 or AFS: Add Pizza to Stock.");
-        System.out.println("999 or EXT: Exit the Program.");
-        System.out.print("Enter your choice: ");
+    private static void printMainMenu() {
+        String menu = """
+                100 or VFQ: View all Queues.
+                101 or VEQ: View all Empty Queues.
+                102 or ACQ: Add customer to a Queue.
+                103 or RCQ: Remove a customer from a Queue.
+                104 or PCQ: Remove a served customer.
+                105 or VCS: View Customers Sorted in alphabetical order.
+                106 or SPD: Store Program Data into file.
+                107 or LPD: Load Program Data from file.
+                108 or STK: View Remaining Pizza Stock.
+                109 or AFS: Add Pizza to Stock.
+                999 or EXT: Exit the Program.
+                Enter your choice:""";
+        System.out.println(menu);
     }
-
 
 
     public static void viewAllQueues() {
@@ -97,9 +83,9 @@ public class SnackKingQueueManagementSystem {
         System.out.println("********************");
         System.out.println("*     Cashiers     *");
         System.out.println("********************");
-        for (int i = 0; i < newArrays.length; i++) {
+        for (int i = 0; i < foodQueues.length; i++) {
             System.out.print("Cashier " + i + ": ");
-            char[] queue = newArrays[i].getQueue();
+            char[] queue = foodQueues[i].getQueue();
             for (char element : queue) {
                 System.out.print(element + " ");
             }
@@ -109,10 +95,10 @@ public class SnackKingQueueManagementSystem {
 
     public static void viewAllEmptyQueues() {
         System.out.println("Empty Slots" + "\n");
-        for (int i = 0; i < newArrays.length; i++) {
+        for (int i = 0; i < foodQueues.length; i++) {
             System.out.print("Queue " + i + " : ");
-            for (int j = 0; j < newArrays[i].getQueue().length; j++) {
-                if (newArrays[i].getQueue()[j] == 'X') {
+            for (int j = 0; j < foodQueues[i].getQueue().length; j++) {
+                if (foodQueues[i].getQueue()[j] == 'X') {
                     System.out.print("X ");
                 }
             }
@@ -121,7 +107,7 @@ public class SnackKingQueueManagementSystem {
     }
 
 
-    public static Customer getDetails(Scanner scanner) {
+    public static Customer fillCustomerDetails(Scanner scanner) {
         System.out.println("Enter Customer's First Name: ");
         String fName = scanner.nextLine();
 
@@ -152,7 +138,7 @@ public class SnackKingQueueManagementSystem {
         System.out.println("Enter The Number Of Pizza: ");
         int numOfPizza = scanner.nextInt();
 
-        if (currentPizzaStock >= stockWarning){
+        if (currentPizzaStock >= stockWarning) {
             currentPizzaStock -= numOfPizza;
         } else {
             System.out.println("Pizza stock is low. Remaining pizzas: " + currentPizzaStock);
@@ -164,13 +150,13 @@ public class SnackKingQueueManagementSystem {
     public static void addCustomer() {
         Scanner scanner = new Scanner(System.in);
 
-        Customer newCustomer = getDetails(scanner);
-        int minQueueIndex = newArrays[0].getMinQueueIndex(); // Find the queue with the minimum length
+        Customer newCustomer = fillCustomerDetails(scanner);
+        int minQueueIndex = foodQueues[0].getMinQueueIndex(); // Find the queue with the minimum length
 
         boolean addedToQueue = false;
 
-        for (int i = 0; i < newArrays.length; i++) {
-            char[] queue = newArrays[minQueueIndex].getQueue();
+        for (int i = 0; i < foodQueues.length; i++) {
+            char[] queue = foodQueues[minQueueIndex].getQueue();
 
             if (queueIsNotFull(queue)) {
                 for (int j = 0; j < queue.length; j++) {
@@ -193,7 +179,7 @@ public class SnackKingQueueManagementSystem {
         }
 
         if (!addedToQueue) {
-            if (!newArrays[minQueueIndex].addToWaitingList(newCustomer)) {
+            if (!foodQueues[minQueueIndex].addToWaitingList(newCustomer)) {
                 System.out.println("All queues and waiting list are currently full. " + newCustomer.getFullName() + " cannot be accommodated.");
             }
         }
@@ -201,13 +187,13 @@ public class SnackKingQueueManagementSystem {
 
 
     private static int getNextAvailableQueueIndex() {
-        int minQueueIndex = newArrays[0].getMinQueueIndex();
+        int minQueueIndex = foodQueues[0].getMinQueueIndex();
         int nextQueueIndex = minQueueIndex;
 
         // Find the index of the next available queue
-        for (int i = 1; i < newArrays.length; i++) {
-            nextQueueIndex = (nextQueueIndex + 1) % newArrays.length;
-            char[] queue = newArrays[nextQueueIndex].getQueue();
+        for (int i = 1; i < foodQueues.length; i++) {
+            nextQueueIndex = (nextQueueIndex + 1) % foodQueues.length;
+            char[] queue = foodQueues[nextQueueIndex].getQueue();
             if (queueIsNotFull(queue)) {
                 return nextQueueIndex;
             }
@@ -237,7 +223,7 @@ public class SnackKingQueueManagementSystem {
             return;
         }
 
-        char[] queue = newArrays[arrayIndex].getQueue();
+        char[] queue = foodQueues[arrayIndex].getQueue();
 
         System.out.println("Enter the index of the customer you wish to remove: ");
         int customerIndex = scanner.nextInt();
@@ -277,7 +263,7 @@ public class SnackKingQueueManagementSystem {
 
         for (int i = 0; i < countCustomers; i++) {
             if (storeCustomers[i].getcId() == customerId) {
-                char[] queue = newArrays[0].getQueue();
+                char[] queue = foodQueues[0].getQueue();
                 int indexInArray = -1;
 
                 for (int j = 0; j < queue.length; j++) {
@@ -288,7 +274,7 @@ public class SnackKingQueueManagementSystem {
                 }
 
                 if (indexInArray != -1) {
-                    for (FoodQueue foodQueue : newArrays) {
+                    for (FoodQueue foodQueue : foodQueues) {
                         char[] customerQueue = foodQueue.getQueue();
                         if (customerQueue[indexInArray] == 'O') {
                             customerQueue[indexInArray] = 'X';
@@ -343,12 +329,12 @@ public class SnackKingQueueManagementSystem {
     }
 
 
-    public static void storeProgramDataToFile(){
+    public static void storeProgramDataToFile() {
         try {
             FileWriter myWriter = new FileWriter("Snack_King_Program_Data.txt");
             myWriter.write("Snack King Food Center" + "\n\n");
 
-            for (FoodQueue foodQueue : newArrays) {
+            for (FoodQueue foodQueue : foodQueues) {
                 char[] queue = foodQueue.getQueue();
                 myWriter.write("Cashier : ");
                 for (char element : queue) {
@@ -374,8 +360,7 @@ public class SnackKingQueueManagementSystem {
     }
 
 
-
-    public static void loadProgramDataFromFile(){
+    public static void loadProgramDataFromFile() {
         try {
             FileReader fileReader = new FileReader("Snack_King_Program_Data.txt");
             Scanner scanner = new Scanner(fileReader);
@@ -403,11 +388,11 @@ public class SnackKingQueueManagementSystem {
     }
 
 
-    public static void viewRemainingPizzaStock(){
+    public static void viewRemainingPizzaStock() {
         System.out.println("The remaining pizza stock: " + currentPizzaStock);
     }
 
-    public static void addPizzaToStock(){
+    public static void addPizzaToStock() {
         Scanner scanner = new Scanner(System.in);
 
         System.out.println("Enter the number of pizzas to add to stock: ");
@@ -421,7 +406,8 @@ public class SnackKingQueueManagementSystem {
         }
     }
 
-    public static void viewIncomeOfEachQueue() {}
+    public static void viewIncomeOfEachQueue() {
+    }
 
 
 }

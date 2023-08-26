@@ -1,8 +1,10 @@
 package Center;
 
+import java.util.Arrays;
+
 public class FoodQueue {
 
-    private char[] queue;
+    private final char[] queue;
 
     private final Customer[] waitingCustomers = new Customer[5];
 
@@ -12,9 +14,7 @@ public class FoodQueue {
 
     public FoodQueue(int size) {
         queue = new char[size];
-        for (int i = 0; i < queue.length; i++) {
-            queue[i] = 'X';
-        }
+        Arrays.fill(queue, 'X');
     }
 
     public char[] getQueue() {
@@ -52,7 +52,6 @@ public class FoodQueue {
         }
 
     }
-
 
 
 }
